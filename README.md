@@ -4,6 +4,8 @@
 
 Flask-based website for a modded Minecraft server with Telegram OAuth authentication. Features Material You design, dynamic forms, admin panel, and file uploads.
 
+![Environ Server website](docs/media/environ-desktop.png)
+
 ## Quick Start
 
 ### 1. Install Dependencies
