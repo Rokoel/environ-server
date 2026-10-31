@@ -1,0 +1,14 @@
+# Environ Server Requirements
+flask==3.0.0
+flask-sqlalchemy==3.1.1
+flask-wtf==1.2.1
+email-validator==2.1.0
+bleach==6.1.0
+markdown==3.5.1
+werkzeug==3.0.1
+python-telegram-bot==20.7
+pyyaml==6.0.1
+transliterate
+requests
+mcstatus
+Flask-Compress

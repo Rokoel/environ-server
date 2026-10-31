@@ -1,0 +1,762 @@
+{% extends "base.html" %}
+
+{% block title %}О сервере - Environ Server{% endblock %}
+
+{% block body_class %}about-page{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Additional styles for about page */
+    .about-hero {
+        position: relative;
+        padding: 80px 24px;
+        text-align: center;
+        background: linear-gradient(135deg, var(--primary-container) 0%, var(--surface) 50%, var(--surface-variant) 100%);
+        border-radius: 0 0 28px 28px;
+        margin-bottom: 48px;
+    }
+
+    .about-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--on-surface);
+    }
+
+    .about-hero p {
+        font-size: 1.25rem;
+        color: var(--on-surface-variant);
+        max-width: 600px;
+        margin: 0 auto 32px;
+    }
+
+    .server-ip-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--surface);
+        padding: 16px 24px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .server-ip-card code {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .copy-ip-btn {
+        background: var(--primary);
+        color: var(--on-primary);
+        border: none;
+        padding: 10px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .copy-ip-btn:hover {
+        background: var(--primary-container);
+        color: var(--on-primary-container);
+        transform: scale(1.02);
+    }
+
+    /* Screenshots Section */
+    .screenshots-section {
+        padding: 0 24px;
+        margin-bottom: 64px;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 32px;
+        margin-top: 32px;
+        text-align: center;
+        color: var(--on-surface);
+    }
+
+    .screenshots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .screenshot-card {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        aspect-ratio: 16/9;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .screenshot-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+    }
+
+    .screenshot-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .screenshot-card:hover img {
+        transform: scale(1.05);
+    }
+
+    .screenshot-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 24px;
+        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        color: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .screenshot-card:hover .screenshot-overlay {
+        opacity: 1;
+    }
+
+    /* Mods Section & Dropdown Styles */
+    .mods-section {
+        padding: 0 24px;
+        margin-bottom: 64px;
+        margin-top: 96px;
+        max-width: 848px; /* 800 + padding */
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .mods-dropdown-toggle {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--surface);
+        padding: 24px 32px;
+        border-radius: 20px;
+        border: 1px solid var(--md-sys-color-outline-variant);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        color: var(--on-surface);
+    }
+
+    .mods-dropdown-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        border-color: var(--md-sys-color-primary);
+    }
+
+    .mods-dropdown-toggle .section-title {
+        margin: 0;
+        text-align: left;
+    }
+
+    .mods-dropdown-icon {
+        width: 32px;
+        height: 32px;
+        color: var(--on-surface);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mods-dropdown-icon.open {
+        transform: rotate(180deg);
+    }
+
+    .mods-dropdown-content {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mods-dropdown-content.open {
+        grid-template-rows: 1fr;
+    }
+
+    .mods-dropdown-inner {
+        overflow: hidden;
+    }
+
+    .mods-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding-top: 24px; /* Space between button and first card when open */
+    }
+
+    .mod-card {
+        background: var(--surface-variant);
+        border-radius: 16px;
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.2s ease;
+    }
+
+    .mod-card:hover {
+        background: var(--primary-container);
+        transform: translateX(8px);
+    }
+
+    .mod-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .mod-icon svg {
+        width: 28px;
+        height: 28px;
+        color: var(--on-primary);
+    }
+
+    .mod-info {
+        flex: 1;
+    }
+
+    .mod-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--on-surface);
+        margin-bottom: 4px;
+    }
+
+    .mod-description {
+        font-size: 0.9rem;
+        color: var(--on-surface-variant);
+    }
+
+    .mod-category {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .mod-category.optimization {
+        background: #4CAF50;
+        color: white;
+    }
+
+    .mod-category.graphics {
+        background: #2196F3;
+        color: white;
+    }
+
+    .mod-category.gameplay {
+        background: #9C27B0;
+        color: white;
+    }
+
+    .mod-category.utility {
+        background: #FF9800;
+        color: white;
+    }
+
+    .mod-category.social {
+        background: #E91E63;
+        color: white;
+    }
+
+    /* Lightbox */
+    .lightbox {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .lightbox.active {
+        display: flex;
+        opacity: 1;
+    }
+
+    .lightbox img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 16px;
+        box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        background: var(--surface);
+        border: none;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+    }
+
+    .lightbox-close:hover {
+        transform: scale(1.1);
+    }
+
+    .lightbox-close svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Server Stats */
+    .stats-section {
+        padding: 0 24px;
+        margin-bottom: 64px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .stat-card {
+        background: var(--surface);
+        border-radius: 20px;
+        padding: 32px;
+        text-align: center;
+        border: 1px solid var(--outline-variant);
+        transition: all 0.2s;
+    }
+
+    .stat-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--on-surface-variant);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    /* ============================================================================
+   Rules Section
+   ============================================================================ */
+
+	.rules-section {
+	    padding: 0 24px;
+	    margin-bottom: 64px;
+	    max-width: 900px;
+	    margin-left: auto;
+	    margin-right: auto;
+	}
+
+	.rules-dropdown-toggle {
+	    width: 100%;
+	    display: flex;
+	    align-items: center;
+	    justify-content: space-between;
+	    
+	    color: var(--color-primary);
+
+	    background: var(--md-sys-color-surface);
+	    border: 1px solid var(--md-sys-color-outline-variant);
+
+	    padding: 24px 32px;
+	    border-radius: 20px;
+
+	    cursor: pointer;
+	    transition: all 0.3s ease;
+	}
+	
+	.rules-dropdown-toggle .section-title {
+		text-align: left;
+		margin: 0;
+	}
+
+	.rules-dropdown-toggle:hover {
+	    border-color: var(--md-sys-color-primary);
+	    transform: translateY(-2px);
+	    box-shadow: var(--shadow-md);
+	}
+
+	.rules-dropdown-icon {
+	    width: 32px;
+	    height: 32px;
+	    transition: transform 0.3s ease;
+	}
+
+	.rules-dropdown-icon.open {
+	    transform: rotate(180deg);
+	}
+
+	.rules-dropdown-content {
+	    display: grid;
+	    grid-template-rows: 0fr;
+	    transition: grid-template-rows 0.4s ease;
+	}
+
+	.rules-dropdown-content.open {
+	    grid-template-rows: 1fr;
+	}
+
+	.rules-dropdown-inner {
+	    overflow: hidden;
+	}
+
+	.rules-container {
+	    display: flex;
+	    flex-direction: column;
+	    gap: 20px;
+	    padding-top: 24px;
+	}
+
+	.rule-block {
+	    background: var(--md-sys-color-surface-variant);
+	    padding: 24px;
+	    border-radius: 16px;
+	    transition: transform 0.2s;
+	}
+
+	.rule-block:hover {
+	    transform: translateX(6px);
+	}
+
+	.rule-block h3 {
+	    color: var(--md-sys-color-primary);
+	    margin-bottom: 12px;
+	}
+
+	.rule-block ul {
+	    padding-left: 18px;
+	}
+
+	.rule-block li {
+	    margin-bottom: 6px;
+	    color: var(--md-sys-color-on-surface-variant);
+	}
+
+    /* Join Button */
+    .join-section {
+        text-align: center;
+        padding: 48px 24px;
+    }
+
+    .join-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--color-primary);
+        background: var(--md-sys-color-surface);
+        padding: 18px 48px;
+        border-radius: 28px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: 1px solid var(--md-sys-color-outline-variant);
+        cursor: pointer;
+    }
+
+    .join-button:hover {
+        background: var(--primary-container);
+        color: var(--on-primary-container);
+        transform: scale(1.05);
+        border: 1px solid var(--md-sys-color-primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .about-hero h1 {
+            font-size: 2rem;
+        }
+
+        .about-hero p {
+            font-size: 1rem;
+        }
+
+        .server-ip-card {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .server-ip-card code {
+            font-size: 1.25rem;
+        }
+
+        .screenshots-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .mods-dropdown-toggle {
+            padding: 20px;
+        }
+
+        .mods-dropdown-toggle .section-title {
+            font-size: 1.5rem;
+        }
+
+        .mod-card {
+            flex-direction: column;
+            text-align: center;
+            gap: 12px;
+        }
+
+        .mod-category {
+            align-self: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{# Mods Section #}
+<section class="mods-section">
+    <button class="mods-dropdown-toggle" onclick="toggleMods()" aria-expanded="false" aria-controls="modsDropdown">
+        <h2 class="section-title">Установленные моды</h2>
+        <svg class="mods-dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    </button>
+    
+    <div class="mods-dropdown-content" id="modsDropdown">
+        <div class="mods-dropdown-inner">
+            <div class="mods-list">
+                {% for mod in mods %}
+                <div class="mod-card">
+                    <div class="mod-icon" style="background: {{ mod.color }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                        </svg>
+                    </div>
+                    <div class="mod-info">
+                        <div class="mod-name">{{ mod.name }}</div>
+                        <div class="mod-description">{{ mod.description|safe }}</div>
+                    </div>
+                    <span class="mod-category {{ mod.category }}">{{ mod.category }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Screenshots Section #}
+<section class="screenshots-section">
+    <h2 class="section-title">Скриншоты</h2>
+    <div class="screenshots-grid">
+        {% for screenshot in screenshots %}
+        <div class="screenshot-card" onclick="openLightbox('{{ url_for('static', filename='screenshots/' ~ screenshot.url) }}')">
+            <img src="{{ url_for('static', filename='screenshots/' ~ screenshot.url) }}" alt="{{ screenshot.alt }}" loading="lazy"
+     style="filter: blur(10px); transition: filter 0.3s;"
+     onload="this.style.filter='blur(0)';">
+            <div class="screenshot-overlay">
+                <h3>{{ screenshot.title }}</h3>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{# Rules Section #}
+<section class="rules-section">
+    <button class="rules-dropdown-toggle" onclick="toggleRules()" aria-expanded="false" aria-controls="rulesDropdown">
+        <h2 class="section-title">Правила сервера</h2>
+
+        <svg class="rules-dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    </button>
+
+    <div class="rules-dropdown-content" id="rulesDropdown">
+        <div class="rules-dropdown-inner">
+
+            <div class="rules-container">
+
+                <div class="rule-block">
+                    <h3>1. Общие положения</h3>
+                    <ul>
+                        <li>Играя на сервере, вы автоматически соглашаетесь с данными правилами.</li>
+                        <li>Незнание правил не освобождает от ответственности.</li>
+                        <li>Администрация может изменять правила без предварительного уведомления (впрочем, уведомлять мы скорее всего будем).</li>
+                        <li>В спорных ситуациях окончательное решение принимает администрация.</li>
+                        <li>В некоторых случаях возможно проведение внутриигровых судов для решения спорных моментов.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-block">
+                    <h3>2. Общение</h3>
+                    <ul>
+                        <li>Запрещены оскорбления, токсичное поведение и травля.</li>
+                        <li>Запрещены угрозы и провокации конфликтов.</li>
+                        <li>Запрещён спам, флуд и чрезмерное засорение чата.</li>
+                        <li>Разумеется, у администрации есть чувство юмора, однако именно администрация принимает окончательное решение о том, была ли шутка чрезмерно грубой, поэтому будьте внимательны.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-block">
+                    <h3>3. Игровой процесс</h3>
+                    <ul>
+                        <li>Запрещены читы, особенно те, которые мешают другим игрокам (они будут наказываться особенно серьезно).</li>
+                        <li>Строго запрещено намеренно вызывать лаги сервера.</li>
+                        <li>Запрещено гриферство и разрушение чужих построек. В рамках отыгрыша по предварительной договоренности разрушать постройки других игроков разрешено, однако очень рекомендуем каким-то образом сохранять подтверждения таких договоренностей.</li>
+                        <li>Уважайте других игроков, а также их деятельность на сервере и проекты.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-block">
+                    <h3>4. Моды и клиенты</h3>
+                    <ul>
+                        <li>Разрешены только моды, не дающие нечестного преимущества.</li>
+                        <li>Запрещены X-Ray, килаура и подобные явно-являющиеся-читами модификации (то, что отностить к подобной категории, считает администрация).</li>
+                        <li>Если вы сомневаетесь в моде — уточните у администрации. Если вам очень нравится какой-то мод, вы можете предложить его администрации и другим игрокам (и если он заинтересует и понравится игрокам, он скорее всего будет добавлен на сервер).</li>
+                    </ul>
+                </div>
+
+                <div class="rule-block">
+                    <h3>5. Наказания</h3>
+                    <ul>
+                        <li>За нарушение правил выдаются предупреждения, муты или баны.</li>
+                        <li>Попытки обхода наказаний приводят к более строгим мерам.</li>
+                    </ul>
+                </div>
+                
+                <div class="rule-block">
+                    <h3>6. Другое</h3>
+                    <ul>
+                        <li>Вторые аккаунты разрешены, но только если они используются в адекватных целях. Чтобы добавить свой второй аккаунт на сервер, напишите администрации.</li>
+                        <li>Мы открыты к диалогу, и часто решение администрации будет совпадать с решением большинства игроков сервера (и как минимум будет стремиться к объективности и непредвзятости).</li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{# Join Section #}
+<section class="join-section">
+    <a href="{{ url_for('index') }}" class="join-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+        </svg>
+        <span>Подать заявку</span>
+    </a>
+</section>
+
+{# Lightbox #}
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+    <img id="lightboxImage" src="" alt="Screenshot">
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Toggle Mods Dropdown Function
+    function toggleMods() {
+        const dropdownContent = document.getElementById('modsDropdown');
+        const dropdownIcon = document.querySelector('.mods-dropdown-icon');
+        const toggleButton = document.querySelector('.mods-dropdown-toggle');
+        
+        const isOpen = dropdownContent.classList.contains('open');
+        
+        if (isOpen) {
+            dropdownContent.classList.remove('open');
+            dropdownIcon.classList.remove('open');
+            toggleButton.setAttribute('aria-expanded', 'false');
+        } else {
+            dropdownContent.classList.add('open');
+            dropdownIcon.classList.add('open');
+            toggleButton.setAttribute('aria-expanded', 'true');
+        }
+    }
+
+    // Lightbox functions
+    function openLightbox(src) {
+        const lightbox = document.getElementById('lightbox');
+        const img = document.getElementById('lightboxImage');
+        img.src = src;
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        const lightbox = document.getElementById('lightbox');
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Close on escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+    
+    function toggleRules() {
+	    const dropdown = document.getElementById("rulesDropdown");
+	    const icon = document.querySelector(".rules-dropdown-icon");
+	    const button = document.querySelector(".rules-dropdown-toggle");
+
+	    const isOpen = dropdown.classList.contains("open");
+
+	    if (isOpen) {
+		dropdown.classList.remove("open");
+		icon.classList.remove("open");
+		button.setAttribute("aria-expanded", "false");
+	    } else {
+		dropdown.classList.add("open");
+		icon.classList.add("open");
+		button.setAttribute("aria-expanded", "true");
+	    }
+	}
+</script>
+{% endblock %}

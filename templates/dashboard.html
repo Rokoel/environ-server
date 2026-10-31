@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+
+{% block title %}Панель управления - Environ Server{% endblock %}
+
+{% block body_class %}dashboard-page{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Панель управления</h1>
+        <p class="user-welcome">Добро пожаловать, {{ user.first_name or user.username or 'Игрок' }}!</p>
+    </div>
+
+    {# Status card #}
+    <div class="status-card">
+        <div class="status-header">
+            <h2>Статус вашего аккаунта</h2>
+            <span class="status-badge status-{{ user.status }}">{{ {
+                'unverified': 'Не проверен',
+                'pending': 'На рассмотрении',
+                'verified': 'Подтверждён',
+                'rejected': 'Отклонён',
+                'banned': 'Заблокирован'
+            }.get(user.status, user.status) }}</span>
+        </div>
+
+        {# Rejection reason #}
+        {% if user.status == 'rejected' and user.rejection_reason %}
+            <div class="rejection-notice">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <div>
+                    <strong>Причина отклонения:</strong>
+                    <p>{{ user.rejection_reason }}</p>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Banned message #}
+        {% if user.status == 'banned' %}
+            <div class="banned-notice">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                </svg>
+                <h3>Ваш аккаунт заблокирован :(</h3>
+                <p>Вы больше не можете подавать заявки на наш сервер. Если вы считаете, что это ошибка, <a href="https://t.me/environ_server?direct">напишите нам</a>.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    {# Verified user - Server Info #}
+    {% if user.status == 'verified' %}
+        <div class="server-info-card">
+            <h2>Информация о сервере</h2>
+
+            <div class="server-details">
+                <div class="server-ip-section">
+                    <label>IP сервера:</label>
+                    <div class="ip-display">
+                        <code>server.environ-server.org</code>
+                        <button class="copy-button" onclick="copyToClipboard('server.environ-server.org')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="server-version">
+                    <label>Версия:</label>
+                    <span>1.20.1 (Fabric)</span>
+                </div>
+
+                <div class="server-port">
+                    <label>Порт:</label>
+                    <span>25565 (можно не указывать)</span>
+                </div>
+            </div>
+
+            <div class="instructions-section">
+                <h3>Как подключиться:</h3>
+                <ol class="instructions-list">
+                    <li>Скачайте и установите лаунчер (мы рекомендуем использовать <a href="https://prismlauncher.org/">Prism Launcher</a>)</li>
+                    <li>Установите версию 1.20.1 с Fabric 0.18.4 и скачайте моды и текстурпаки из раздела ниже</li>
+                    <li>Далее вам нужно будет разместить файлы из папки mods в папку mods вашего Майнкрафта (и аналогично с resourcepacks и др.)</li>
+                    <li>Запустите игру и добавьте сервер по его IP</li>
+                </ol>
+            </div>
+
+            {# Download buttons - Customizable section #}
+            <div class="downloads-section">
+                <div class="download-buttons">
+                    <a href="{{ url_for('static', filename='mods/mods.zip') }}" target="_blank" download class="download-button" data-filename="mods.zip">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Скачать моды и текстурпаки</span>
+                    </a>
+                </div>
+            </div>
+
+            {# TG link #}
+            <div class="discord-section">
+                <h3>Канал в телеграм</h3>
+                <a href="https://t.me/environ_server" class="discord-link" target="_blank" rel="noopener noreferrer">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    	<path d="M21 5L2 12.5L9 13.5M21 5L18.5 20L9 13.5M21 5L9 13.5M9 13.5V19L12.2488 15.7229"/>
+                    </svg>
+                    <span>Присоединиться к каналу</span>
+                </a>
+            </div>
+            
+            <div class="discord-section">
+                <h3>Приватный чат в телеграм</h3>
+                <a href="https://t.me/+7jH_MlaoHWdiYThi" class="discord-link" target="_blank" rel="noopener noreferrer">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    	<path d="M21 5L2 12.5L9 13.5M21 5L18.5 20L9 13.5M21 5L9 13.5M9 13.5V19L12.2488 15.7229"/>
+                    </svg>
+                    <span>Присоединиться к чату</span>
+                </a>
+            </div>
+
+            <div class="logout-section">
+                <a href="{{ url_for('logout') }}" class="logout-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Выйти</span>
+                </a>
+            </div>
+        </div>
+    {% elif user.status != 'banned' %}
+        {# Application form #}
+        <div class="form-card">
+            <h2>Заявка на вступление</h2>
+
+            {% if application and application.status == 'pending' %}
+                <div class="application-submitted">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <h3>Ваша заявка на рассмотрении</h3>
+                    <p>Пожалуйста, ожидайте. Мы рассмотрим вашу заявку в ближайшее время.</p>
+                </div>
+
+                <div class="edit-form-section">
+                    <a href="#applicationForm" class="edit-form-button">Редактировать заявку</a>
+                </div>
+            {% endif %}
+
+            <form id="applicationForm" method="POST" action="{{ url_for('submit_form') }}" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                {% if form_fields %}
+                    {% for field in form_fields %}
+                        <div class="form-field">
+                            <label for="{{ field.question }}">
+                                {{ field.question }}
+                                {% if field.required %}<span class="required">*</span>{% endif %}
+                            </label>
+
+                            {# Text input #}
+                            {% if field.type == 'text' %}
+                                <input type="text"
+                                       id="{{ field.question }}"
+                                       name="{{ field.question }}"
+                                       {% if field.required %}required{% endif %}
+                                       value="{{ application.answers|get_answer(field.question, '') if application else '' }}"
+                                       class="form-input">
+
+                            {# Textarea #}
+                            {% elif field.type == 'textarea' %}
+                                <textarea id="{{ field.question }}"
+                                          name="{{ field.question }}"
+                                          {% if field.required %}required{% endif %}
+                                          rows="4"
+                                          class="form-textarea">{{ application.answers|get_answer(field.question, '') if application else '' }}</textarea>
+
+                            {# Dropdown #}
+                            {% elif field.type == 'dropdown' %}
+                                <select id="{{ field.question }}"
+                                        name="{{ field.question }}"
+                                        {% if field.required %}required{% endif %}
+                                        class="form-select">
+                                    <option value="">Выберите...</option>
+                                    {% for option in field.options %}
+                                        <option value="{{ option }}"
+                                                {% if application and application.answers|get_answer(field.question, '') == option %}selected{% endif %}>
+                                            {{ option }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+
+                            {# Multi-select #}
+                            {% elif field.type == 'multiselect' %}
+                                <div class="checkbox-group">
+                                    {% for option in field.options %}
+                                        <label class="checkbox-label">
+                                            <input type="checkbox"
+                                                   name="{{ field.question }}"
+                                                   value="{{ option }}"
+                                                   {% if application and option in (application.answers|get_answer(field.question, '')).split(',') %}checked{% endif %}>
+                                            <span>{{ option }}</span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+
+                            {# File upload #}
+                            {% elif field.type == 'file' %}
+                                <div class="file-upload-area">
+                                    <input type="file"
+                                           id="{{ field.question }}"
+                                           name="{{ field.question }}"
+                                           {% if field.required %}required{% endif %}
+                                           accept=".pdf,.png,.jpg,.jpeg,.zip,.webm,.webp"
+                                           class="file-input">
+                                    <div class="file-upload-placeholder">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                        <span>Перетащите файл или нажмите для выбора</span>
+                                        <small>PDF, PNG, JPG, ZIP (макс. 30MB)</small>
+                                    </div>
+                                </div>
+                                {% if application and application.answers|get_answer(field.question, '') %}
+                                    <p class="file-info">Загружено: {{ application.answers|get_answer(field.question, '') }}</p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-form">Форма временно недоступна. Пожалуйста, зайдите позже.</p>
+                {% endif %}
+
+                <button type="submit" class="submit-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                    <span>Отправить заявку</span>
+                </button>
+            </form>
+        </div>
+    {% endif %}
+
+    {# Logout button for non-verified users #}
+    {% if user.status != 'verified' %}
+        <div class="dashboard-logout">
+            <a href="{{ url_for('logout') }}" class="logout-button-secondary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Выйти</span>
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // File upload styling
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInputs = document.querySelectorAll('.file-input');
+
+        fileInputs.forEach(input => {
+            const placeholder = input.parentElement.querySelector('.file-upload-placeholder');
+
+            input.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const fileName = this.files[0].name;
+                    placeholder.innerHTML = `
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        <span>${fileName}</span>
+                    `;
+                    placeholder.classList.add('file-selected');
+                }
+            });
+        });
+
+        // Drag and drop
+        const fileAreas = document.querySelectorAll('.file-upload-area');
+
+        fileAreas.forEach(area => {
+            area.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            });
+
+            area.addEventListener('dragleave', function() {
+                this.classList.remove('drag-over');
+            });
+
+            area.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+
+                const input = this.querySelector('.file-input');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    input.files = e.dataTransfer.files;
+                    input.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+    });
+
+    // Copy to clipboard function
+    function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text)
+            .then(() => alert('IP скопирован в буфер обмена!'))
+            .catch(err => console.error('Не удалось скопировать:', err));
+    } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-999999px";
+
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+            document.execCommand('copy');
+            alert('IP скопирован в буфер обмена!');
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+        }
+
+        document.body.removeChild(textarea);
+    }
+}
+</script>
+{% endblock %}

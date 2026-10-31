@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Редактирование формы - Админ{% endblock %}
+
+{% block body_class %}form-edit-page{% endblock %}
+
+{% block content %}
+<div class="form-edit-container">
+    <div class="form-edit-header">
+        <h1>Редактирование формы заявки</h1>
+        <a href="{{ url_for('admin') }}" class="back-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Назад к заявкам</span>
+        </a>
+    </div>
+
+    <div class="form-edit-content">
+        {# Instructions #}
+        <div class="instructions-card">
+            <h3>Синтаксис формы</h3>
+            <div class="syntax-help">
+                <div class="syntax-item">
+                    <code>## Вопрос</code>
+                    <span>Заголовок вопроса</span>
+                </div>
+                <div class="syntax-item">
+                    <code>- type: text</code>
+                    <span>Текстовое поле</span>
+                </div>
+                <div class="syntax-item">
+                    <code>- type: textarea</code>
+                    <span>Многострочный текст</span>
+                </div>
+                <div class="syntax-item">
+                    <code>- type: dropdown</code>
+                    <span>Выпадающий список</span>
+                </div>
+                <div class="syntax-item">
+                    <code>- type: multiselect</code>
+                    <span>Множественный выбор</span>
+                </div>
+                <div class="syntax-item">
+                    <code>- type: file</code>
+                    <span>Загрузка файла</span>
+                </div>
+                <div class="syntax-item">
+                    <code>- required: true</code>
+                    <span>Обязательное поле</span>
+                </div>
+                <div class="syntax-item">
+                    <code>- options: Да, Нет, Возможно</code>
+                    <span>Варианты для dropdown/multiselect</span>
+                </div>
+            </div>
+        </div>
+
+        {# Form editor #}
+        <div class="editor-card">
+            <form method="POST" action="{{ url_for('edit_form') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label for="formMarkdown">Содержимое формы (Markdown):</label>
+                    <textarea id="formMarkdown" name="form_markdown" rows="20" class="form-textarea code-editor" placeholder="## Ваш вопрос
+- type: text
+- required: true">{{ form_markdown }}</textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="save-button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        <span>Сохранить форму</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {# Preview #}
+        <div class="preview-card">
+            <h3>Предпросмотр формы:</h3>
+            <div class="form-preview">
+                {% if form_fields %}
+                    {% for field in form_fields %}
+                        <div class="preview-field">
+                            <label>
+                                {{ field.question }}
+                                {% if field.required %}<span class="required">*</span>{% endif %}
+                            </label>
+
+                            {% if field.type == 'text' %}
+                                <input type="text" class="preview-input" disabled placeholder="Текстовое поле">
+
+                            {% elif field.type == 'textarea' %}
+                                <textarea class="preview-textarea" disabled placeholder="Многострочный текст"></textarea>
+
+                            {% elif field.type == 'dropdown' %}
+                                <select class="preview-select" disabled>
+                                    <option>Выберите...</option>
+                                    {% for option in field.options %}
+                                        <option>{{ option }}</option>
+                                    {% endfor %}
+                                </select>
+
+                            {% elif field.type == 'multiselect' %}
+                                <div class="preview-checkbox-group">
+                                    {% for option in field.options %}
+                                        <label class="preview-checkbox">
+                                            <input type="checkbox" disabled>
+                                            <span>{{ option }}</span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+
+                            {% elif field.type == 'file' %}
+                                <div class="preview-file" disabled>
+                                    <span>Загрузка файла</span>
+                                </div>
+                            {% endif %}
+
+                            <span class="field-type-badge">{{ field.type }}</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-fields">Нет полей формы</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Auto-update preview when textarea changes
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.getElementById('formMarkdown');
+        let debounceTimer;
+
+        textarea.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function() {
+                // Simple preview update - in production, this would parse the markdown
+                // For now, users can see the saved result after submitting
+            }, 500);
+        });
+    });
+</script>
+{% endblock %}

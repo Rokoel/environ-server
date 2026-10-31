@@ -1,0 +1,554 @@
+[
+  {
+    "name": "Adaptive Tooltips",
+    "description": "<a href='https://www.curseforge.com/projects/704346'>https://www.curseforge.com/projects/704346</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Architectury",
+    "description": "<a href='https://modrinth.com/mod/architectury-api'>https://modrinth.com/mod/architectury-api",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "BadOptimizations",
+    "description": "<a href='https://modrinth.com/mod/g96Z4WVZ'>https://modrinth.com/mod/g96Z4WVZ</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "Better Archeology",
+    "description": "<a href='https://modrinth.com/mod/better-archeology'>https://modrinth.com/mod/better-archeology</a>",
+    "category": "gameplay",
+    "color": "#6A5ACD"
+  },
+  {
+    "name": "Bundle Backport-ish",
+    "description": "<a href='https://modrinth.com/mod/bundle-backportish'>https://modrinth.com/mod/bundle-backportish</a>",
+    "category": "gameplay",
+    "color": "#6A5ACD"
+  },
+  {
+    "name": "CTOV - Chef's delight Compat",
+    "description": "<a href='https://modrinth.com/mod/6PJbKvJH'>https://modrinth.com/mod/6PJbKvJH</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "CTOV - Create: Structures",
+    "description": "<a href='https://modrinth.com/mod/l9fldtN4'>https://modrinth.com/mod/l9fldtN4</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "CTOV - Farmer Delight Compat",
+    "description": "<a href='https://modrinth.com/mod/CdRC4fyI'>https://modrinth.com/mod/CdRC4fyI</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Chef's Delight",
+    "description": "<a href='https://modrinth.com/mod/pvcsfne4'>https://modrinth.com/mod/pvcsfne4</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "ChoiceTheorem's Overhauled Village",
+    "description": "<a href='https://modrinth.com/mod/fgmhI8kH'>https://modrinth.com/mod/fgmhI8kH</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "ClientSort",
+    "description": "<a href='https://www.curseforge.com/minecraft/mc-mods/clientsort'>https://www.curseforge.com/minecraft/mc-mods/clientsort</a>",
+    "category": "utility",
+    "color": "#2ECC71"
+  },
+  {
+    "name": "Cloth Config v11",
+    "description": "<a href='https://modrinth.com/mod/9s6osm5g'>https://modrinth.com/mod/9s6osm5g</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "CoroUtil",
+    "description": "<a href='https://modrinth.com/mod/rLLJ1OZM'>https://modrinth.com/mod/rLLJ1OZM</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Create",
+    "description": "<a href='https://modrinth.com/mod/Xbc0uyRg'>https://modrinth.com/mod/Xbc0uyRg</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Create Enchantment Industry",
+    "description": "<a href='https://www.curseforge.com/projects/1460182'>https://www.curseforge.com/projects/1460182</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Create: Copycats+",
+    "description": "<a href='https://modrinth.com/mod/UT2M39wf'>https://modrinth.com/mod/UT2M39wf</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Create: Framed",
+    "description": "<a href='https://modrinth.com/mod/15fFZ3f4'>https://modrinth.com/mod/15fFZ3f4</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Create: Steam 'n' Rails",
+    "description": "<a href='https://modrinth.com/mod/ZzjhlDgM'>https://modrinth.com/mod/ZzjhlDgM</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Create: Structures",
+    "description": "<a href='https://modrinth.com/mod/IAnP4np7'>https://modrinth.com/mod/IAnP4np7</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "CreativeCore",
+    "description": "<a href='https://www.curseforge.com/projects/257814'>https://www.curseforge.com/projects/257814</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Craft Saddles",
+    "description": "<a href='https://www.curseforge.com/minecraft/mc-mods/saddles'>https://www.curseforge.com/minecraft/mc-mods/saddles</a>",
+    "category": "gameplay",
+    "color": "#F39C12"
+  },
+  {
+    "name": "Dungeons and Taverns",
+    "description": "<a href='https://modrinth.com/mod/tpehi7ww'>https://modrinth.com/mod/tpehi7ww</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Dungeons and Taverns Ancient City Overhaul",
+    "description": "<a href='https://modrinth.com/mod/DNuNq5bb'>https://modrinth.com/mod/DNuNq5bb</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Dungeons and Taverns Pillager Outpost Rework",
+    "description": "<a href='https://modrinth.com/mod/QIt10I7z'>https://modrinth.com/mod/QIt10I7z</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Dungeons and Taverns Stronghold Rework",
+    "description": "<a href='https://modrinth.com/mod/rYocd2LE'>https://modrinth.com/mod/rYocd2LE</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Dungeons and Taverns Swamp Hut Rework",
+    "description": "<a href='https://modrinth.com/mod/nWSeFpQt'>https://modrinth.com/mod/nWSeFpQt</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "End's Delight",
+    "description": "<a href='https://www.curseforge.com/projects/662675'>https://www.curseforge.com/projects/662675</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Emotecraft",
+    "description": "<a href='https://www.curseforge.com/minecraft/mc-mods/emotecraft'>https://www.curseforge.com/minecraft/mc-mods/emotecraft</a>",
+    "category": "social",
+    "color": "#E84393"
+  },
+  {
+    "name": "Entity Model Features",
+    "description": "<a href='https://modrinth.com/mod/4I1XuqiY'>https://modrinth.com/mod/4I1XuqiY</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "Entity Texture Features",
+    "description": "<a href='https://modrinth.com/mod/BVzZfTc1'>https://modrinth.com/mod/BVzZfTc1</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "Fabric API",
+    "description": "<a href='https://modrinth.com/mod/P7dR8mSH'>https://modrinth.com/mod/P7dR8mSH</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Fabric Language Kotlin",
+    "description": "<a href='https://www.curseforge.com/projects/308769'>https://www.curseforge.com/projects/308769</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Farmer's Delight",
+    "description": "<a href='https://github.com/newhoryzon/farmers-delight-fabric/'>https://github.com/newhoryzon/farmers-delight-fabric/</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Farmer's Delight (Modrinth)",
+    "description": "<a href='https://modrinth.com/mod/4EakbH8e'>https://modrinth.com/mod/4EakbH8e</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "FerriteCore",
+    "description": "<a href='https://modrinth.com/mod/uXXizFIs'>https://modrinth.com/mod/uXXizFIs</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "FirstPerson",
+    "description": "<a href='https://modrinth.com/mod/H5XMjpHi'>https://modrinth.com/mod/H5XMjpHi</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Forge Config API Port",
+    "description": "<a href='https://modrinth.com/mod/ohNO6lps'>https://modrinth.com/mod/ohNO6lps</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Fragmentum",
+    "description": "<a href='https://modrinth.com/mod/49C5QgTK'>https://modrinth.com/mod/49C5QgTK</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "FSit",
+    "description": "<a href='https://modrinth.com/mod/fsit'>https://modrinth.com/mod/fsit</a>",
+    "category": "social",
+    "color": "#E91E63"
+  },
+  {
+    "name": "GuardVillagers",
+    "description": "<a href='https://modrinth.com/mod/59rkB3YY'>https://modrinth.com/mod/59rkB3YY</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Illager Invasion",
+    "description": "<a href='https://modrinth.com/mod/jSV9w0J5'>https://modrinth.com/mod/jSV9w0J5</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "ImmediatelyFast",
+    "description": "<a href='https://modrinth.com/mod/5ZwdcRci'>https://modrinth.com/mod/5ZwdcRci</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "Indium",
+    "description": "<a href='https://modrinth.com/mod/Orvt0mRa'>https://modrinth.com/mod/Orvt0mRa</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "Iris",
+    "description": "<a href='https://modrinth.com/mod/YL57xq9U'>https://modrinth.com/mod/YL57xq9U</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "It Takes a Pillage Continuation",
+    "description": "<a href='https://modrinth.com/mod/QOJOg1gE'>https://modrinth.com/mod/QOJOg1gE</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Just Enough Items",
+    "description": "<a href='https://modrinth.com/mod/u6dRKJwZ'>https://modrinth.com/mod/u6dRKJwZ</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "LambDynamicLights",
+    "description": "<a href='https://www.curseforge.com/projects/393442'>https://www.curseforge.com/projects/393442</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "Lithium",
+    "description": "<a href='https://modrinth.com/mod/gvQqBUqZ'>https://modrinth.com/mod/gvQqBUqZ</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "Lithostitched",
+    "description": "<a href='https://modrinth.com/mod/XaDC71GB'>https://modrinth.com/mod/XaDC71GB</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "Loot Integrations Mod",
+    "description": "<a href='https://modrinth.com/mod/loot-integrations'>https://modrinth.com/mod/loot-integrations</a>",
+    "category": "gameplay",
+    "color": "#8E44AD"
+  },
+  {
+    "name": "Map Distance Fix",
+    "description": "<a href='https://modrinth.com/mod/51BNNAng'>https://modrinth.com/mod/51BNNAng</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "Mod Menu",
+    "description": "<a href='https://modrinth.com/mod/mOgUt4GM'>https://modrinth.com/mod/mOgUt4GM</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Model Gap Fix",
+    "description": "<a href='https://modrinth.com/mod/QdG47OkI'>https://modrinth.com/mod/QdG47OkI</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "ModernFix",
+    "description": "<a href='https://modrinth.com/mod/nmDcB62a'>https://modrinth.com/mod/nmDcB62a</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "Nether's Delight",
+    "description": "<a href='https://www.curseforge.com/projects/701831'>https://www.curseforge.com/projects/701831</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "NotEnoughAnimations",
+    "description": "<a href='https://modrinth.com/mod/MPCX6s5C'>https://modrinth.com/mod/MPCX6s5C</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "Ocean's Delight",
+    "description": "<a href='https://modrinth.com/mod/DGiq4ZSW'>https://modrinth.com/mod/DGiq4ZSW</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Particle Rain",
+    "description": "<a href='https://modrinth.com/mod/nrikgvxm'>https://modrinth.com/mod/nrikgvxm</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "Particular",
+    "description": "<a href='https://modrinth.com/mod/B1CcCd9h'>https://modrinth.com/mod/B1CcCd9h</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "Picture Mode",
+    "description": "<a href='https://modrinth.com/mod/kFU5UCQz'>https://modrinth.com/mod/kFU5UCQz</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "Player Locator Plus",
+    "description": "<a href='https://www.curseforge.com/minecraft/mc-mods/player-locator-plus'>https://www.curseforge.com/minecraft/mc-mods/player-locator-plus</a>",
+    "category": "utility",
+    "color": "#3498DB"
+  },
+  {
+    "name": "Puzzles Lib",
+    "description": "<a href='https://modrinth.com/mod/QAGBst4M'>https://modrinth.com/mod/QAGBst4M</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Raid On",
+    "description": "<a href='https://modrinth.com/mod/hS7D092w'>https://modrinth.com/mod/hS7D092w</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Reese's Sodium Options",
+    "description": "<a href='https://modrinth.com/mod/Bh37bMuy'>https://modrinth.com/mod/Bh37bMuy</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "Resourceful Lib",
+    "description": "<a href='https://modrinth.com/mod/G1hIVOrD'>https://modrinth.com/mod/G1hIVOrD</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Shulker Box Tooltip",
+    "description": "<a href='https://modrinth.com/mod/2M01OLQq'>https://modrinth.com/mod/2M01OLQq</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Server Sleep",
+    "description": "<a href='https://modrinth.com/datapack/serversleep'>https://modrinth.com/datapack/serversleep</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Simple Voice Chat",
+    "description": "<a href='https://modrinth.com/mod/9eGKb6K1'>https://modrinth.com/mod/9eGKb6K1</a>",
+    "category": "social",
+    "color": "#E91E63"
+  },
+  {
+    "name": "Skin Restorer",
+    "description": "<a href='https://modrinth.com/mod/skinrestorer'>https://modrinth.com/mod/skinrestorer</a>",
+    "category": "social",
+    "color": "#E91E63"
+  },
+  {
+    "name": "Sodium",
+    "description": "<a href='https://modrinth.com/mod/AANobbMI'>https://modrinth.com/mod/AANobbMI</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "Sodium Extra",
+    "description": "<a href='https://modrinth.com/mod/PtjYWJkn'>https://modrinth.com/mod/PtjYWJkn</a>",
+    "category": "optimization",
+    "color": "#4CAF50"
+  },
+  {
+    "name": "Sound Physics Remastered",
+    "description": "<a href='https://modrinth.com/mod/qyVF9oeo'>https://modrinth.com/mod/qyVF9oeo</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "Storage Delight",
+    "description": "<a href='https://modrinth.com/mod/LTTvOp5L'>https://modrinth.com/mod/LTTvOp5L</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "SuperMartijn642's Config Lib",
+    "description": "<a href='https://modrinth.com/mod/supermartijn642-config-lib'>https://modrinth.com/mod/supermartijn642-config-lib</a>",
+    "category": "utility",
+    "color": "#F1C40F"
+  },
+  {
+    "name": "Sushi Bar",
+    "description": "<a href='https://modrinth.com/mod/tr2Mv6ke'>https://modrinth.com/mod/tr2Mv6ke</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Tidal Towns",
+    "description": "<a href='https://modrinth.com/mod/EEIwvQVo'>https://modrinth.com/mod/EEIwvQVo</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Thief",
+    "description": "<a href='https://modrinth.com/mod/thief'>https://modrinth.com/mod/thief</a>",
+    "category": "gameplay",
+    "color": "#D35400"
+  },
+  {
+    "name": "True Ending: Ender Dragon Overhaul",
+    "description": "<a href='https://modrinth.com/mod/MCnBYP0b'>https://modrinth.com/mod/MCnBYP0b</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "UndergroundRooms",
+    "description": "<a href='https://modrinth.com/mod/xzodQEJb'>https://modrinth.com/mod/xzodQEJb</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Variants&Ventures",
+    "description": "<a href='https://modrinth.com/mod/lNDRiXkY'>https://modrinth.com/mod/lNDRiXkY</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "Visuality",
+    "description": "<a href='https://modrinth.com/mod/rI0hvYcd'>https://modrinth.com/mod/rI0hvYcd</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "Voice Chat Soundboard",
+    "description": "<a href='https://modrinth.com/mod/N8s60DWW'>https://modrinth.com/mod/N8s60DWW</a>",
+    "category": "social",
+    "color": "#E91E63"
+  },
+  {
+    "name": "Wakes",
+    "description": "<a href='https://modrinth.com/mod/dlNu0RQY'>https://modrinth.com/mod/dlNu0RQY</a>",
+    "category": "graphics",
+    "color": "#2196F3"
+  },
+  {
+    "name": "What Are They Up To",
+    "description": "<a href='https://modrinth.com/mod/AtB5mHky'>https://modrinth.com/mod/AtB5mHky</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "YUNG's API",
+    "description": "<a href='https://modrinth.com/mod/Ua7DFN59'>https://modrinth.com/mod/Ua7DFN59</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "YUNG's Better Dungeons",
+    "description": "<a href='https://modrinth.com/mod/o1C1Dkj5'>https://modrinth.com/mod/o1C1Dkj5</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "YUNG's Better Mineshafts",
+    "description": "<a href='https://modrinth.com/mod/HjmxVlSr'>https://modrinth.com/mod/HjmxVlSr</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "YUNG's Better Nether Fortresses",
+    "description": "<a href='https://modrinth.com/mod/Z2mXHnxP'>https://modrinth.com/mod/Z2mXHnxP</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "YUNG's Better Ocean Monuments",
+    "description": "<a href='https://modrinth.com/mod/3dT9sgt4'>https://modrinth.com/mod/3dT9sgt4</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  },
+  {
+    "name": "YetAnotherConfigLib",
+    "description": "<a href='https://modrinth.com/mod/1eAoo2KR'>https://modrinth.com/mod/1eAoo2KR</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "Zoomify",
+    "description": "<a href='https://modrinth.com/mod/w7ThoJFB'>https://modrinth.com/mod/w7ThoJFB</a>",
+    "category": "utility",
+    "color": "#FF9800"
+  },
+  {
+    "name": "oωo",
+    "description": "<a href='https://modrinth.com/mod/ccKDOlHs'>https://modrinth.com/mod/ccKDOlHs</a>",
+    "category": "gameplay",
+    "color": "#9C27B0"
+  }
+]

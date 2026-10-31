@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Админ-панель - Environ Server{% endblock %}
+
+{% block body_class %}admin-page{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Админ-панель</h1>
+        <div class="admin-actions">
+            <a href="{{ url_for('edit_form') }}" class="admin-button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                <span>Редактировать форму</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="admin-button-secondary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Выйти</span>
+            </a>
+        </div>
+    </div>
+
+    {# Filters and sorting #}
+    <div class="admin-filters">
+        <div class="filter-group">
+            <label>Статус:</label>
+            <select id="statusFilter" onchange="applyFilter()">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Все</option>
+                <option value="unverified" {% if status_filter == 'unverified' %}selected{% endif %}>Не проверен</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>На рассмотрении</option>
+                <option value="verified" {% if status_filter == 'verified' %}selected{% endif %}>Подтверждён</option>
+                <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Отклонён</option>
+                <option value="banned" {% if status_filter == 'banned' %}selected{% endif %}>Заблокирован</option>
+            </select>
+        </div>
+
+        <div class="sort-group">
+            <label>Сортировка:</label>
+            <select id="sortBy" onchange="applyFilter()">
+                <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>По дате</option>
+                <option value="username" {% if sort_by == 'username' %}selected{% endif %}>По имени</option>
+                <option value="status" {% if sort_by == 'status' %}selected{% endif %}>По статусу</option>
+            </select>
+            <button class="sort-order" onclick="toggleSortOrder()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" {% if order == 'desc' %}style="transform: rotate(180deg);"{% endif %}>
+                    <path d="M12 5v14M19 12l-7 7-7-7"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    {# Applications list #}
+    <div class="applications-list">
+        {% if applications %}
+            {% for item in applications %}
+                <div class="application-card" data-status="{{ item.user.status }}">
+                    <div class="application-header">
+                        <div class="user-info">
+                            {% if item.user.photo_url %}
+                                <img src="{{ item.user.photo_url }}" alt="Avatar" class="user-avatar">
+                            {% else %}
+                                <div class="user-avatar-placeholder">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h3>{{ item.user.first_name or 'Неизвестно' }} {{ item.user.last_name or '' }}</h3>
+                                <span class="username">@{{ item.user.username or 'Нет username' }}</span>
+                            </div>
+                        </div>
+                        <span class="status-badge status-{{ item.user.status }}">{{ {
+                            'unverified': 'Не проверен',
+                            'pending': 'На рассмотрении',
+                            'verified': 'Подтверждён',
+                            'rejected': 'Отклонён',
+                            'banned': 'Заблокирован'
+                        }.get(item.user.status, item.user.status) }}</span>
+                    </div>
+
+                    <div class="application-body">
+                        {# Display form answers #}
+                        {% if item.answers and form_fields %}
+                            <div class="answers-list">
+                                {% for field in form_fields %}
+                                    {% if field.question in item.answers %}
+                                        <div class="answer-item">
+                                            <span class="answer-label">{{ field.question }}</span>
+                                            <span class="answer-value">
+                                                {% if field.type == 'file' and item.answers[field.question] %}
+                                                    <a href="{{ url_for('uploaded_file', filename=item.user.telegram_id + '/' + item.answers[field.question]) }}" target="_blank">
+                                                        {{ item.answers[field.question] }}
+                                                    </a>
+                                                {% else %}
+                                                    {{ item.answers[field.question] or '-' }}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="no-answers">Нет данных заявки</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="application-footer">
+                        <span class="application-date">
+                            Заявка от: {{ item.application.created_at.strftime('%d.%m.%Y %H:%M') if item.application.created_at else 'Нет даты' }}
+                        </span>
+
+                        {# Status management #}
+                        <div class="status-actions">
+                            {% if item.user.status != 'verified' %}
+                                <form method="POST" action="{{ url_for('update_user_status', user_id=item.user.id) }}" class="status-form">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="status" value="verified">
+                                    <button type="submit" class="action-button verify">Подтвердить</button>
+                                </form>
+                            {% endif %}
+
+                            {% if item.user.status != 'rejected' %}
+                                <button class="action-button reject" onclick="showRejectModal({{ item.user.id }}, '{{ item.user.status }}')">Отклонить</button>
+                            {% endif %}
+
+                            {% if item.user.status != 'banned' %}
+                                <form method="POST" action="{{ url_for('update_user_status', user_id=item.user.id) }}" class="status-form">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="status" value="banned">
+                                    <button type="submit" class="action-button ban">Заблокировать</button>
+                                </form>
+                            {% endif %}
+
+                            {% if item.user.status in ['rejected', 'banned'] %}
+                                <form method="POST" action="{{ url_for('update_user_status', user_id=item.user.id) }}" class="status-form">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="status" value="unverified">
+                                    <button type="submit" class="action-button reset">Сбросить</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-applications">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <h3>Нет заявок</h3>
+                <p>Заявок пока нет или они не соответствуют выбранным фильтрам.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{# Reject Modal #}
+<div id="rejectModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Отклонить заявку</h3>
+            <button class="modal-close" onclick="closeRejectModal()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <form id="rejectForm" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="status" value="rejected">
+            <div class="modal-body">
+                <label for="rejectionReason">Причина отклонения:</label>
+                <textarea id="rejectionReason" name="rejection_reason" rows="4" placeholder="Укажите причину отклонения заявки..." required></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-button cancel" onclick="closeRejectModal()">Отмена</button>
+                <button type="submit" class="modal-button confirm">Отклонить</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let currentSortOrder = '{{ order }}';
+
+    function applyFilter() {
+        const status = document.getElementById('statusFilter').value;
+        const sort = document.getElementById('sortBy').value;
+        const order = currentSortOrder;
+
+        window.location.href = `{{ url_for('admin') }}?status=${status}&sort=${sort}&order=${order}`;
+    }
+
+    function toggleSortOrder() {
+        currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
+        applyFilter();
+    }
+
+    function showRejectModal(userId, currentStatus) {
+        const modal = document.getElementById('rejectModal');
+        const form = document.getElementById('rejectForm');
+        form.action = `/admin/user/${userId}/status`;
+        modal.classList.add('show');
+    }
+
+    function closeRejectModal() {
+        const modal = document.getElementById('rejectModal');
+        modal.classList.remove('show');
+    }
+
+    // Close modal on outside click
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('rejectModal');
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeRejectModal();
+            }
+        });
+    });
+</script>
+{% endblock %}

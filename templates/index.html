@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Environ Server - Главная{% endblock %}
+
+{% block body_class %}landing-page{% endblock %}
+
+{% block content %}
+{# Full-screen video background #}
+<div class="video-container">
+    <video id="bgVideo" autoplay muted loop playsinline poster="{{ url_for('static', filename='video/fallback.webp') }}">
+        <source src="{{ url_for('static', filename='video/background.webm') }}" type="video/webm">
+        Ваш браузер не поддерживает .webm.
+    </video>
+    <div class="video-overlay"></div>
+</div>
+
+{# Hero section with server name and tagline #}
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="server-name">{{ server_name }}</h1>
+        <p class="server-tagline">{{ tagline }}</p>
+        <button class="scroll-indicator" onclick="scrollToContent()" aria-label="Scroll Down">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+    </div>
+</section>
+
+{# Alternating info blocks section #}
+<section class="info-section" id="infoSection">
+    <div class="info-container">
+
+        {# Block 1 - Right side #}
+        <div class="info-block info-block-right">
+            <div class="info-card">
+                <h2>Мы создаем сейфспейс</h2>
+                <p>Наш сервер является <b>бесплатным</b>, потому что мы хотим создать безопасное пространство для тех, кто придерживается таких же принципов, что и мы: ценит свободу, уважает других и их предпочтения, умеет слушать своих собеседников и понимает, что ошибки — это нормально. Чтобы наше пространство состояло из таких людей, всем игрокам нужно заполнить анкету на нашем сайте (и в редких случаях пройти интервью). Чтобы это сделать, войдите на наш сайт через Telegram и перейдите в профиль.</p>
+            </div>
+        </div>
+
+        {# Block 2 - Left side #}
+        <div class="info-block info-block-left">
+            <div class="info-card">
+                <h2>О сборке</h2>
+                <p>Наш сервер является Vanilla+ сервером, то есть мы стремились сделать цельный опыт, не отходящий от стиля оригинальной игры. Наша сборка построена вокруг <b>деревень и пилладжеров</b>, мода <b>Create</b> и <b>Farmer's Delight</b>. Полный список модов и несколько скриншотов доступны <a href="{{ url_for('about') }}">здесь</a>.</p>
+            </div>
+        </div>
+
+        {# Block 3 - Right side #}
+        <div class="info-block info-block-right">
+            <div class="info-card">
+            	<h2>Безопасность</h2>
+                <p>На сервере установлены вайтлист и простая система регистрации, чтобы никто не смог войти под вашим аккаунтом. А в случае, если ваши постройки кто-то испортит, мы вернем их в прежнее состояние в два клика, а с нарушителем поступим в соответствии с простыми и понятными правилами (они доступны <a href="{{ url_for('about') }}">тут</a>).</p>
+            </div>
+        </div>
+
+        {# Block 4 - Left side #}
+        <div class="info-block info-block-left">
+            <div class="info-card">
+            	<h2>Связь с сообществом</h2>
+                <p>Чтобы игроки могли общаться между собой, у нас есть <a href="https://t.me/+2_IA-4IDnY1jODUy">чатик в телеграме</a>, а на сервере установлен войс-чат. Если на сервере возникают какие-то конфликты, администрация сервера помогает их решать. К администрации также <a href="https://t.me/environ_server?direct">можно обращаться</a> в случае возникновения вопросов (или при наличии предложений).</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Social links section #}
+<section class="social-section">
+    <div class="social-container">
+        <p class="social-text">{{ social_section_text }}</p>
+        <div class="social-links">
+            {% for link in social_links %}
+            <a href="{{ link.url }}" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="{{ link.name }}">
+                {% if link.icon == 'telegram' %}
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.696.065-1.225-.46-1.901-.903-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.751-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                </svg>
+                {% elif link.icon == 'mail' %}
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                {% elif link.icon == 'vk' %}
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.07-1.74-1.031-1.03-1.492-1.17-1.742-1.17-.358 0-.461.09-.461.551v1.782c0 .38-.13.551-1.243.551-1.83 0-3.965-1.11-5.402-3.177-2.04-2.857-2.858-4.15-2.858-4.967 0-.267.09-.49.551-.49h1.744c.436 0 .609.174.782.578.87 1.925 2.338 3.683 3.683 3.683.28 0 .49-.14.49-.551V9.206c-.07-.49-.28-.578-1.03-.578-.747 0-1.53.28-2.117.802-.466.413-.802.578-1.167.578-.466 0-.802-.28-1.073-.927-.516-1.386-.516-2.488 0-3.177.686-.913 1.83-1.456 3.044-1.456.802 0 1.456.165 1.963.525.464.33.68.525.86.802.18.237.24.38.24.64v1.456c0 .38.09.61.535.61.307 0 .64-.154 1.073-.567 1.456-1.456 2.468-3.573 2.468-4.967 0-.928-.28-1.742-.893-2.28-.608-.536-1.456-.804-2.468-.804-.802 0-1.456.168-1.963.464-.464.28-.68.536-.68.804 0 .31.28.464.717.464h1.744c.431 0 .608.174.717.6.28 1.14 1.166 2.224 2.468 2.858 1.073.524 1.963.804 2.608.804.803 0 1.273-.39 1.533-1.073.238-.68.28-1.166.28-1.743V1.87c-.04-.908-.28-1.533-.68-1.87-.464-.39-1.166-.578-2.117-.578z"/>
+                </svg>
+                {% else %}
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# Footer #}
+<footer class="landing-footer">
+    <p>&copy; 2026 Environ Server. Все права защищены.</p>
+</footer>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Video background handling
+    document.addEventListener('DOMContentLoaded', function() {
+        const video = document.getElementById('bgVideo');
+
+        // Handle video loading errors
+        video.addEventListener('error', function() {
+            console.log('Video failed to load, using fallback');
+            video.style.display = 'none';
+            document.querySelector('.video-container').classList.add('video-fallback');
+        });
+
+        // Check if video can play
+        video.addEventListener('canplay', function() {
+            video.style.display = 'block';
+        });
+
+        // Handle visibility change to save resources
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                video.pause();
+            } else {
+                video.play().catch(() => {});
+            }
+        });
+    });
+
+    // Scroll to content function
+    function scrollToContent() {
+        const infoSection = document.getElementById('infoSection');
+        infoSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Intersection Observer for scroll animations
+    document.addEventListener('DOMContentLoaded', function() {
+        const observerOptions = {
+            threshold: 0.2,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.info-block').forEach(block => {
+            observer.observe(block);
+        });
+    });
+</script>
+{% endblock %}

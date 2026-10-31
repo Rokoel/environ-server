@@ -1,0 +1,22 @@
+[
+  {
+    "url": "small-village.png",
+    "title": "Деревни на сервере",
+    "alt": "Villages on the server"
+  },
+  {
+    "url": "create-village.png",
+    "title": "Деревня с Create'ом",
+    "alt": "Village with Create's elements"
+  },
+  {
+    "url": "farmers-village.png",
+    "title": "Деревня с FarmersDelight'ом",
+    "alt": "Village with FarmersDelight's elements"
+  },
+  {
+    "url": "pillager.png",
+    "title": "Башня пилладжеров...",
+    "alt": "Pillagers' tower"
+  }
+]

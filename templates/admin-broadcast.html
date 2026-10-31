@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Рассылка - Admin Panel{% endblock %}
+
+{% block content %}
+<style>
+    .broadcast-container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; color: #fff; }
+    .broadcast-card { background: #1a1a1a; border-radius: 12px; border: 1px solid #333; padding: 2rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; color: #aaa; font-weight: 500; }
+    .form-control { width: 100%; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; padding: 0.8rem; color: #fff; }
+    textarea.form-control { resize: vertical; min-height: 150px; font-family: 'Courier New', Courier, monospace; }
+    .target-toggle { display: flex; gap: 1rem; margin-bottom: 1rem; }
+    .target-option { flex: 1; padding: 1rem; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; cursor: pointer; text-align: center; transition: 0.3s; }
+    .target-option.active { border-color: #0088cc; background: #0088cc22; }
+    .user-list-scroll { max-height: 200px; overflow-y: auto; background: #0e0e0e; border: 1px solid #333; border-radius: 6px; padding: 0.5rem; }
+    .user-checkbox-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0.5rem; border-radius: 4px; }
+    .user-checkbox-item:hover { background: #222; }
+    .broadcast-btn { background: #0088cc; color: white; border: none; padding: 1rem 2rem; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
+    .broadcast-btn:hover { background: #0099ee; }
+    
+    .preview-box { background: #242424; border-radius: 8px; padding: 1rem; border-left: 4px solid #0088cc; margin-top: 1rem; display: none; }
+    .preview-content { white-space: pre-wrap; word-break: break-word; }
+    .tg-spoiler { background: #555; color: transparent; border-radius: 2px; }
+    .tg-spoiler:hover { background: transparent; color: inherit; }
+    
+    .format-toolbar { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .format-btn { background: #333; border: 1px solid #444; color: #ccc; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
+    .format-btn:hover { background: #444; color: #fff; }
+</style>
+
+<div class="broadcast-container">
+    <div class="broadcast-card">
+        <h1>📢 Рассылка через Telegram</h1>
+        <p style="color: #888; margin-bottom: 2rem;">Отправка сообщений пользователям сервера</p>
+
+        <form action="{{ url_for('admin_broadcast') }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="form-group">
+                <label>Кому отправить?</label>
+                <div class="target-toggle">
+                    <div class="target-option active" onclick="setTarget('status', this)">По статусу</div>
+                    <div class="target-option" onclick="setTarget('individual', this)">Индивидуально</div>
+                </div>
+                <input type="hidden" name="target_type" id="target_type" value="status">
+
+                <div id="status_selector">
+                    <select name="target_status" class="form-control">
+                        <option value="pending">На рассмотрении</option>
+                        <option value="verified">Подтверждённые (Игроки)</option>
+                        <option value="rejected">Отклонённые</option>
+                        <option value="unverified">Не проверенные</option>
+                        <option value="banned">Заблокированные</option>
+                    </select>
+                </div>
+
+                <div id="individual_selector" style="display: none;">
+                    <div class="user-list-scroll">
+                        {% for user in users %}
+                        <label class="user-checkbox-item">
+                            <input type="checkbox" name="target_users" value="{{ user.telegram_id }}">
+                            <span>{{ user.first_name }} {{ user.last_name or '' }} (@{{ user.username or 'ID:' + user.telegram_id }})</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Сообщение</label>
+                <div class="format-toolbar">
+                    <button type="button" class="format-btn" onclick="insertTag('**')"><b>B</b></button>
+                    <button type="button" class="format-btn" onclick="insertTag('*')"><i>I</i></button>
+                    <button type="button" class="format-btn" onclick="insertTag('`')">Code</button>
+                    <button type="button" class="format-btn" onclick="insertTag('||')">Spoiler</button>
+                    <button type="button" class="format-btn" onclick="insertTag('__')"><u>U</u></button>
+                    <button type="button" class="format-btn" onclick="insertTag('~~')"><s>S</s></button>
+                </div>
+                <textarea name="message_text" id="message_text" class="form-control" placeholder="Введите текст... Используйте Markdown: **жирный**, ||спойлер||" oninput="updatePreview()"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Вложение (Изображение или файл)</label>
+                <input type="file" name="attachment" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.zip,.rar">
+            </div>
+
+            <div id="preview_container" class="preview-box">
+                <small style="color: #0088cc; font-weight: bold;">Предпросмотр сообщения:</small>
+                <div id="preview_content" class="preview-content"></div>
+            </div>
+
+            <button type="submit" class="broadcast-btn" style="margin-top: 2rem;">🚀 Начать рассылку</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function setTarget(type, el) {
+        document.querySelectorAll('.target-option').forEach(opt => opt.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('target_type').value = type;
+        
+        if(type === 'status') {
+            document.getElementById('status_selector').style.display = 'block';
+            document.getElementById('individual_selector').style.display = 'none';
+        } else {
+            document.getElementById('status_selector').style.display = 'none';
+            document.getElementById('individual_selector').style.display = 'block';
+        }
+    }
+
+    function insertTag(tag) {
+        const txt = document.getElementById('message_text');
+        const start = txt.selectionStart;
+        const end = txt.selectionEnd;
+        const selected = txt.value.substring(start, end);
+        const replacement = tag + selected + tag;
+        txt.value = txt.value.substring(0, start) + replacement + txt.value.substring(end);
+        updatePreview();
+        txt.focus();
+    }
+
+    function updatePreview() {
+        const text = document.getElementById('message_text').value;
+        const preview = document.getElementById('preview_container');
+        const content = document.getElementById('preview_content');
+        
+        if(!text.trim()) {
+            preview.style.display = 'none';
+            return;
+        }
+        
+        preview.style.display = 'block';
+        
+        // Simple client-side regex for preview (matches Python logic)
+        let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        html = html.replace(/```([\s\S]*?)```/g, '<pre>$1</pre>');
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+        html = html.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+        html = html.replace(/\*([^*]+)\*/g, '<i>$1</i>');
+        html = html.replace(/\|\|([^|]+)\|\|/g, '<span class="tg-spoiler">$1</span>');
+        html = html.replace(/__([^_]+)__/g, '<u>$1</u>');
+        html = html.replace(/~~([^~]+)~~/g, '<s>$1</s>');
+        
+        content.innerHTML = html;
+    }
+</script>
+{% endblock %}

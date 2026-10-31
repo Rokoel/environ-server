@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Ошибка - Environ Server{% endblock %}
+
+{% block body_class %}error-page{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-content">
+        <div class="error-icon">
+            <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        </div>
+        <h1>Упс! Что-то пошло не так</h1>
+        <p class="error-message">{{ error }}</p>
+        <p class="error-description">Извините за неудобства. Попробуйте вернуться на главную страницу. А еще вы можете <a href="https://t.me/environ_server?direct">написать нам</a>.</p>
+        <a href="{{ url_for('index') }}" class="error-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>На главную</span>
+        </a>
+    </div>
+</div>
+{% endblock %}
