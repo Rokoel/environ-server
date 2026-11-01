@@ -359,12 +359,8 @@ def verify_telegram_auth(data):
     data_check_string = "\n".join([f"{key}={value}" for key, value in sorted(data.items()) if key != 'hash'])
 
     # Calculate expected hash
-    print(data_check_string)
-    print(hash_str)
-
     secret_key = hashlib.sha256(TELEGRAM_BOT_TOKEN.encode()).digest()
     expected_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
-    print(expected_hash)
 
     # Verify hash and timestamp (not more than 24 hours old)
     if hash_str != expected_hash:
@@ -559,7 +555,6 @@ def about():
 def telegram_auth():
     """Handle Telegram OAuth authentication"""
     data = request.args
-    print(data)
 
     # Verify Telegram auth
     if not verify_telegram_auth(data):
@@ -983,13 +978,5 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
 
-        # Load admins and set admin flag for user 733806517
-        admin_ids = load_admins()
-        admin_user = User.query.filter_by(telegram_id='733806517').first()
-        if admin_user:
-            admin_user.is_admin = True
-            db.session.commit()
-            print(f'Admin user 733806517 updated')
-
     # Run app
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=app.config['DEBUG'])

@@ -15,7 +15,7 @@ STATIC_VIDEO_DIR = BASE_DIR / 'static' / 'video'
 
 # Flask configuration
 SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 # Database
 SQLALCHEMY_DATABASE_URI = f'sqlite:///{BASE_DIR / "environ_server.db"}'

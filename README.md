@@ -30,6 +30,9 @@ And a fallback image at: `static/video/fallback.jpg`
 python app.py
 ```
 
+The local server runs on port 5000 with debug mode disabled. For local development,
+set `DEBUG=true` explicitly to enable it.
+
 ### 5. Access the Website
 Open http://localhost:5000 in your browser
 
@@ -139,7 +142,8 @@ sudo nginx -t && sudo systemctl reload nginx
 ## Configuration Files
 
 ### admins.json
-Add Telegram IDs to grant admin access:
+The repository ships with an empty admin list. Add your own Telegram IDs locally
+to grant admin access; do not commit real IDs:
 ```json
 {
   "admin_ids": ["123456789", "other_id"]
