@@ -14,7 +14,13 @@ UPLOAD_FOLDER = BASE_DIR / 'uploads'
 STATIC_VIDEO_DIR = BASE_DIR / 'static' / 'video'
 
 # Flask configuration
-SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+SECRET_KEY = os.environ.get('SECRET_KEY', '')
+if (len(SECRET_KEY.strip()) < 32 or
+        SECRET_KEY == 'dev-secret-key-change-in-production'):
+    raise RuntimeError(
+        'Set SECRET_KEY to a securely generated value of at least 32 characters. '
+        'Generate one with: python -c "import secrets; print(secrets.token_hex(32))"'
+    )
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 # Database

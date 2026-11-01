@@ -221,7 +221,7 @@
                                     <input type="file"
                                            id="{{ field.question }}"
                                            name="{{ field.question }}"
-                                           {% if field.required %}required{% endif %}
+                                           {% if field.required and not (application and application.answers|get_answer(field.question, '')) %}required{% endif %}
                                            accept=".pdf,.png,.jpg,.jpeg,.zip,.webm,.webp"
                                            class="file-input">
                                     <div class="file-upload-placeholder">

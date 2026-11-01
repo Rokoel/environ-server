@@ -24,13 +24,14 @@ import bleach
 import markdown
 from flask import (
     Flask, render_template, request, redirect, url_for, session,
-    flash, jsonify, send_from_directory, abort, current_app
+    flash, jsonify, send_from_directory, abort, current_app, g
 )
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from config import Config, TELEGRAM_BOT_TOKEN, MAX_CONTENT_LENGTH, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, BASE_DIR
 from models import db, User, Application, FormConfig
+from access_logging import QueryStringFilter
 
 MINECRAFT_SERVER_HOST = os.environ.get('MINECRAFT_SERVER_HOST', 'server.environ-server.org')
 MINECRAFT_SERVER_PORT = int(os.environ.get('MINECRAFT_SERVER_PORT', '25565'))
@@ -65,6 +66,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+logging.getLogger('werkzeug').addFilter(QueryStringFilter())
 
 # ============================================================================
 # JINJA2 FILTERS
@@ -90,13 +92,21 @@ def get_answer(answers_json, question, default=''):
 # ============================================================================
 
 def load_admins():
-    """Load admin IDs from JSON file"""
+    """Load the current admin allowlist; invalid configuration denies access."""
     admins_file = BASE_DIR / 'admins.json'
-    if admins_file.exists():
-        with open(admins_file, 'r') as f:
+    try:
+        with open(admins_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            return data.get('admin_ids', [])
-    return []
+        admin_ids = data.get('admin_ids', [])
+        if not isinstance(admin_ids, list):
+            raise ValueError('admin_ids must be a list')
+        return [str(admin_id) for admin_id in admin_ids
+                if re.fullmatch(r'[1-9][0-9]*', str(admin_id))]
+    except FileNotFoundError:
+        return []
+    except (OSError, ValueError, AttributeError):
+        logger.error('Cannot read admin configuration; admin access denied')
+        return []
 
 def load_json(filename):
     """Load JSON file safely"""
@@ -324,11 +334,33 @@ def is_admin(telegram_id):
     return str(telegram_id) in [str(admin_id) for admin_id in load_admins()]
 
 
+@app.before_request
+def refresh_session_user():
+    """Refresh permissions from the database and admin allowlist every request."""
+    g.current_user = None
+    if 'user_id' not in session:
+        return
+    user = db.session.get(User, session['user_id'])
+    if user is None:
+        session.clear()
+        return
+
+    current_admin = user.status != 'banned' and is_admin(user.telegram_id)
+    if user.is_admin != current_admin:
+        user.is_admin = current_admin
+        db.session.commit()
+    session['telegram_id'] = user.telegram_id
+    session['username'] = user.username
+    session['status'] = user.status
+    session['is_admin'] = current_admin
+    g.current_user = user
+
+
 def login_required(f):
     """Decorator for routes that require login"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
+        if g.current_user is None:
             return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
@@ -338,9 +370,9 @@ def admin_required(f):
     """Decorator for routes that require admin privileges"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
+        if g.current_user is None:
             return redirect(url_for('index'))
-        if not session.get('is_admin'):
+        if not g.current_user.is_admin:
             return redirect(url_for('dashboard'))
         return f(*args, **kwargs)
     return decorated_function
@@ -349,11 +381,16 @@ def admin_required(f):
 def verify_telegram_auth(data):
     """Verify Telegram login data using HMAC-SHA256"""
     if not TELEGRAM_BOT_TOKEN:
-        print("TG_BOT_TOKEN FAIL")
         return False
 
     hash_str = data.get('hash', '')
     auth_date = data.get('auth_date', '')
+    telegram_id = data.get('id', '')
+    if (not isinstance(hash_str, str) or
+            not re.fullmatch(r'[0-9a-f]{64}', hash_str) or
+            not isinstance(telegram_id, str) or
+            not re.fullmatch(r'[1-9][0-9]*', telegram_id)):
+        return False
 
     # Build data check string
     data_check_string = "\n".join([f"{key}={value}" for key, value in sorted(data.items()) if key != 'hash'])
@@ -363,16 +400,14 @@ def verify_telegram_auth(data):
     expected_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
 
     # Verify hash and timestamp (not more than 24 hours old)
-    if hash_str != expected_hash:
+    if not hmac.compare_digest(hash_str, expected_hash):
         return False
 
     try:
         auth_timestamp = int(auth_date)
-        if time.time() - auth_timestamp > 86400:  # 24 hours
-            print("OLD AUTH FAILURE")
+        if not 0 <= int(time.time()) - auth_timestamp <= 86400:
             return False
     except (ValueError, TypeError):
-        print("EXCEPTION FAILURE")
         return False
 
     return True
@@ -554,7 +589,11 @@ def about():
 @app.route('/auth/telegram', methods=['GET', 'POST'])
 def telegram_auth():
     """Handle Telegram OAuth authentication"""
-    data = request.args
+    data = request.args if request.method == 'GET' else request.form
+    if any(len(data.getlist(key)) != 1 for key in data):
+        abort(400)
+    # CSRF tokens are not part of Telegram's signed payload for form POSTs.
+    data = {key: value for key, value in data.items() if key != 'csrf_token'}
 
     # Verify Telegram auth
     if not verify_telegram_auth(data):
@@ -589,10 +628,12 @@ def telegram_auth():
         user.first_name = first_name
         user.last_name = last_name
         user.photo_url = photo_url
-        user.is_admin = is_admin(telegram_id)
+        user.is_admin = user.status != 'banned' and is_admin(telegram_id)
 
     db.session.commit()
 
+    # Replace any pre-login session state after successful authentication.
+    session.clear()
     # Set session
     session['user_id'] = user.id
     session['telegram_id'] = user.telegram_id
@@ -657,45 +698,89 @@ def submit_form():
     form_markdown = get_form_markdown()
     form_fields = parse_markdown_form(form_markdown)
 
-    # Collect answers
-    answers = {}
-    current_file_fields = []
+    application = Application.query.filter_by(user_id=user.id).order_by(Application.created_at.desc()).first()
+    try:
+        previous_answers = json.loads(application.answers) if application and application.answers else {}
+        if not isinstance(previous_answers, dict):
+            previous_answers = {}
+    except (ValueError, TypeError):
+        previous_answers = {}
 
-    for field in form_fields:
+    # Validate the entire submission before saving files or changing its status.
+    answers = {}
+    errors = []
+    pending_uploads = []
+    user_upload_dir = UPLOAD_FOLDER.resolve() / str(user.telegram_id)
+
+    for index, field in enumerate(form_fields):
         field_name = field['question']
 
         if field['type'] == 'file':
-            # Track file fields for cleanup
-            current_file_fields.append(field_name)
-
-            # Handle file upload
-            if field_name in request.files:
-                file = request.files[field_name]
-                if file and file.filename:
-                    if allowed_file(file.filename):
-                        # Save file
-                        user_upload_dir = UPLOAD_FOLDER / str(user.telegram_id)
-                        user_upload_dir.mkdir(parents=True, exist_ok=True)
-
-                        # Use original filename (as specified in markdown)
-                        filename = secure_filename(translit(field_name, 'ru', reversed=True)) + '.' + secure_filename(file.filename.split('.')[-1])  # Use field name as filename
-                        file_path = user_upload_dir / filename
-                        file.save(str(file_path))
-
-                        answers[field_name] = filename
-                    else:
-                        flash(f'File type not allowed for {field_name}', 'error')
-        else:
-            # Handle text inputs
-            value = request.form.get(field_name, '')
+            files = request.files.getlist(field_name)
+            if len(files) > 1:
+                errors.append(f'Only one file is allowed for {field_name}')
+                continue
+            file = files[0] if files else None
+            if file and file.filename:
+                if not allowed_file(file.filename):
+                    errors.append(f'File type not allowed for {field_name}')
+                    continue
+                stem = secure_filename(translit(field_name, 'ru', reversed=True)) or f'field_{index}'
+                extension = file.filename.rsplit('.', 1)[1].lower()
+                filename = f'{stem}.{extension}'
+                try:
+                    path = (user_upload_dir / filename).resolve()
+                    path.relative_to(user_upload_dir)
+                except (ValueError, OSError, RuntimeError):
+                    errors.append(f'Invalid upload destination for {field_name}')
+                    continue
+                answers[field_name] = filename
+                pending_uploads.append((file, path))
+            else:
+                # Keep an existing upload when a user edits their application.
+                previous_file = previous_answers.get(field_name, '')
+                if isinstance(previous_file, str) and previous_file:
+                    try:
+                        path = (user_upload_dir / previous_file).resolve()
+                        path.relative_to(user_upload_dir)
+                        if path.is_file():
+                            answers[field_name] = previous_file
+                    except (ValueError, OSError, RuntimeError):
+                        pass
+                if field['required'] and not answers.get(field_name):
+                    errors.append(f'{field_name} is required')
+        elif field['type'] == 'multiselect':
+            values = request.form.getlist(field_name)
+            if any(value not in field['options'] for value in values):
+                errors.append(f'Invalid choice for {field_name}')
+            if field['required'] and not values:
+                errors.append(f'{field_name} is required')
+            # The templates store/display multiselect answers as comma-separated values.
+            answers[field_name] = ','.join(dict.fromkeys(values))
+        elif field['type'] in ('text', 'textarea', 'dropdown'):
+            values = request.form.getlist(field_name)
+            value = values[0] if values else ''
+            if len(values) > 1:
+                errors.append(f'Only one value is allowed for {field_name}')
+            if field['required'] and not value.strip():
+                errors.append(f'{field_name} is required')
+            if field['type'] == 'dropdown' and value and value not in field['options']:
+                errors.append(f'Invalid choice for {field_name}')
             answers[field_name] = value
+        else:
+            errors.append(f'Unsupported field type for {field_name}')
 
-    # Clean up files that are no longer in the form
-    # cleanup_user_files(user.telegram_id, current_file_fields)
+    if errors:
+        for error in errors:
+            flash(error, 'error')
+        return redirect(url_for('dashboard'))
+
+    if pending_uploads:
+        user_upload_dir.mkdir(parents=True, exist_ok=True)
+        for file, path in pending_uploads:
+            file.save(str(path))
 
     # Save or update application
-    application = Application.query.filter_by(user_id=user.id).order_by(Application.created_at.desc()).first()
-    
     is_resubmission = application is not None and application.answers
 
     if application:
@@ -723,19 +808,21 @@ def submit_form():
 @login_required
 def uploaded_file(filename):
     """Serve uploaded files"""
-    user = User.query.get(session['user_id'])
-
-    if not user:
+    user = g.current_user
+    # Reject traversal syntax even when its normalized destination is allowed.
+    if ('\\' in filename or
+            any(part in ('', '.', '..') for part in filename.split('/'))):
         abort(403)
-
-    # Check if user has access to this file
-    path_parts = filename.split('/')
-    if path_parts[0] != str(user.telegram_id):
-        # Check if admin
-        if not session.get('is_admin'):
-            abort(403)
-
-    return send_from_directory(UPLOAD_FOLDER, filename)
+    root = UPLOAD_FOLDER.resolve()
+    try:
+        target = (root / filename).resolve()
+        target.relative_to(root)
+        if not user.is_admin:
+            user_root = root / str(user.telegram_id)
+            target.relative_to(user_root)
+    except (ValueError, OSError, RuntimeError):
+        abort(403)
+    return send_from_directory(root, target.relative_to(root).as_posix())
 
 
 @app.route('/admin')
@@ -954,6 +1041,16 @@ def init_db():
 def create_admin():
     """Create admin user"""
     telegram_id = input('Enter Telegram ID: ')
+    if not re.fullmatch(r'[1-9][0-9]*', telegram_id):
+        print('Enter a positive numeric Telegram ID.')
+        return
+    admin_ids = load_admins()
+    if telegram_id not in admin_ids:
+        admin_ids.append(telegram_id)
+        admins_file = BASE_DIR / 'admins.json'
+        temporary_file = admins_file.with_suffix('.json.tmp')
+        temporary_file.write_text(json.dumps({'admin_ids': admin_ids}, indent=2) + '\n', encoding='utf-8')
+        temporary_file.replace(admins_file)
     user = User.query.filter_by(telegram_id=telegram_id).first()
 
     if user:

@@ -18,8 +18,12 @@ pip install -r requirements.txt
 Create a `.env` file or set environment variables:
 ```bash
 export TELEGRAM_BOT_TOKEN="your_bot_token_here"
-export SECRET_KEY="your_secret_key_here"
+export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
 ```
+
+Keep the generated key in your private `.env` or service environment and reuse it
+across restarts. Startup fails if the key is missing, shorter than 32 characters,
+or is the old development default. Changing it invalidates existing sessions.
 
 ### 3. Add Video File
 Place your webm video file at: `static/video/background.webm`
@@ -60,20 +64,30 @@ User=www-data
 Group=www-data
 WorkingDirectory=/path/to/environ-server
 Environment="PATH=/path/to/venv/bin"
-Environment="TELEGRAM_BOT_TOKEN=your_bot_token"
-Environment="SECRET_KEY=your_secret_key"
-ExecStart=/path/to/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:5000 app:app
+EnvironmentFile=/path/to/environ-server/.env
+ExecStart=/path/to/venv/bin/gunicorn --config /path/to/environ-server/gunicorn.conf.py app:app
 
 [Install]
 WantedBy=multi-user.target
 ```
 
+Put `SECRET_KEY=<your generated key>` and `TELEGRAM_BOT_TOKEN=<your bot token>` in
+that private environment file (without `export`). Before starting Gunicorn,
+initialize the database from the project directory with `flask --app app init-db`.
+
 #### 3. Configure Nginx
 Create `/etc/nginx/sites-available/environ-server`:
 ```nginx
+# This file is included from nginx.conf's http context.
+# Omit query strings and Referer: both can contain Telegram login credentials.
+log_format environ_safe '$remote_addr [$time_local] '
+                        '"$request_method $uri $server_protocol" '
+                        '$status $body_bytes_sent';
+
 server {
     listen 80;
     server_name your-domain.com;
+    access_log /var/log/nginx/environ-access.log environ_safe;
 
     location / {
         proxy_pass http://127.0.0.1:5000;
@@ -82,15 +96,20 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
-    location /static {
-        alias /path/to/environ-server/static;
+    location /static/ {
+        alias /path/to/environ-server/static/;
     }
 
-    location /uploads {
-        alias /path/to/environ-server/uploads;
-    }
+    # /uploads must pass through location / to Flask's authorization checks.
 }
 ```
+
+Apply the same access-log format to your HTTPS server block. Enable HTTPS before
+using Telegram login in production. Do not add a static alias for `/uploads`.
+The Gunicorn configuration and `python app.py` also omit query strings from access
+logs. Keep these formats when adding a proxy or log collector, and do not log
+request bodies or full callback URLs there. The Werkzeug log filter also applies
+when serving locally with `flask run`.
 
 #### 4. Enable and Start
 ```bash
@@ -150,6 +169,10 @@ to grant admin access; do not commit real IDs:
 }
 ```
 
+This file is the source of admin permissions. Changes take effect on the next
+request, including existing sessions; banned users cannot use admin access.
+`flask --app app create-admin` updates both the allowlist and the user record.
+
 ### form.md
 Define your application form using markdown:
 ```markdown
@@ -198,3 +221,13 @@ environ-server/
 ├── templates/         # HTML templates
 └── uploads/           # User uploads (auto-created)
 ```
+
+## Tests
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The tests use a temporary database, synthetic Telegram signatures, and temporary
+uploads. They do not contact Telegram or the Minecraft server. To also test
+Gunicorn's real access-log formatting, install it with `pip install gunicorn`.

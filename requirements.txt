@@ -12,3 +12,4 @@ transliterate
 requests
 mcstatus
 Flask-Compress
+python-dotenv
